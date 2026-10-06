@@ -121,3 +121,7 @@ def test_welford_is_stable_for_large_offset_data():
     assert mean == pytest.approx(1_000_000_000_002.5)
     assert variance == pytest.approx(5 / 3)
     assert std_dev == pytest.approx(math.sqrt(5 / 3))
+
+def test_welford_fails_fast_on_invalid_value():
+    with pytest.raises(TypeError):
+        welford([1, 2, "invalid", 4])
