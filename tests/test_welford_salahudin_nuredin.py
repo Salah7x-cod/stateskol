@@ -125,3 +125,7 @@ def test_welford_is_stable_for_large_offset_data():
 def test_welford_fails_fast_on_invalid_value():
     with pytest.raises(TypeError):
         welford([1, 2, "invalid", 4])
+
+def test_welford_rejects_boolean_values():
+    with pytest.raises(TypeError, match="expected a real number"):
+        welford([1, True, 3])
