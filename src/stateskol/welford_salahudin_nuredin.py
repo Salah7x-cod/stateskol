@@ -11,9 +11,10 @@ def welford(data: Iterable[Real | None]) -> tuple[int, float, float, float, int]
     Parameters
     ----------
     data:
-        An iterable containing real numeric observations. ``None`` and
-        floating-point ``NaN`` values are treated as missing and dropped.
-        Infinite values and non-numeric values are invalid.
+        An iterable of real numeric observations. ``None`` and floating-point
+        ``NaN`` values are treated as missing and dropped. Boolean values,
+        infinite values, and non-numeric values are invalid. Numeric
+        observations are converted to ``float`` before calculation.
 
     Returns
     -------
@@ -21,10 +22,14 @@ def welford(data: Iterable[Real | None]) -> tuple[int, float, float, float, int]
         A tuple containing:
         ``(count, mean, sample_variance, sample_std_dev, dropped_count)``.
 
+        ``count`` is the number of valid observations used in the calculation.
+        ``dropped_count`` is the number of missing observations that were
+        ignored.
+
     Raises
     ------
     TypeError
-        If an observation is not a real numeric value.
+        If an observation is not a real numeric value or is a boolean.
     ValueError
         If an observation is infinite or if fewer than two valid observations
         remain, making sample variance undefined.
@@ -37,6 +42,8 @@ def welford(data: Iterable[Real | None]) -> tuple[int, float, float, float, int]
 
     Missing values are dropped rather than imputed, and the number dropped is
     explicitly returned.
+
+    The sample variance uses ``M2 / (count - 1)`` with Bessel's correction.
 
     Examples
     --------
@@ -53,7 +60,7 @@ def welford(data: Iterable[Real | None]) -> tuple[int, float, float, float, int]
             dropped += 1
             continue
 
-        if not isinstance(value, Real):
+        if isinstance(value, bool) or not isinstance(value, Real):
             raise TypeError(
                 f"invalid observation {value!r}: expected a real number"
             )
